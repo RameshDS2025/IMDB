@@ -24,7 +24,6 @@ Python
     Matplotlib (Data visualization)
 
 
-
 PyMySQL (Database management)
 
 Xampp (Relational database)
