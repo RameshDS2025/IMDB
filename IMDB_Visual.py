@@ -76,9 +76,9 @@ Contact=st.sidebar.button("Contact", type="primary") #Contact button
 if Contact:
     st.markdown("<h3 style='color:#660d0d; font-weight:bold;'>Contact</h3>", unsafe_allow_html=True)
     st.markdown("""<p style='color:#4f0915; font-size:24px;'>
-                5396 North Reese Avenue,, <br>
+                0001 North Avenue, <br>
                 Hollywood,  <br>
-                USA - 90078.
+                USA - 10001.
                 </p>""", unsafe_allow_html=True)
 
 Privacy=st.sidebar.button("Privacy", type="primary") #Privacy button
