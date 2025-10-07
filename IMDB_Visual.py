@@ -11,7 +11,7 @@ def get_base64_of_bin_file(bin_file):
     return base64.b64encode(data).decode()
 
 # Provide the path to the uploaded image
-image_base64 = get_base64_of_bin_file("F:\Guvi\Projects\IMDB\Imdb.png")
+image_base64 = get_base64_of_bin_file("Imdb.png")
 
 
 # CSS to set the background image
