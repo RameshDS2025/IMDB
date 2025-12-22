@@ -1,3 +1,27 @@
 {
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "dbcode.connections": [
+        {
+            "connectionId": "ndfRhmu4EqQhywiYPfDD4",
+            "name": "TiDB_IMDB",
+            "driver": "tidb",
+            "connectionType": "host",
+            "host": "gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
+            "port": 4000,
+            "ssl": true,
+            "sslCACert": "f:\\Guvi\\Projects\\IMDB\\isrgrootx1.pem",
+            "sslTrustCertificate": false,
+            "username": "XYQz75JSVoqAfAE.root",
+            "password": "",
+            "savePassword": "secretStorage",
+            "database": "imdb",
+            "readOnly": false,
+            "postConnectionSqlType": "inline",
+            "connectionTimeout": 300,
+            "driverOptions": {
+                "retrievePublickey": true,
+                "disableMultiStatements": false
+            }
+        }
+    ]
 }
