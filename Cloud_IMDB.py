@@ -426,71 +426,88 @@ if st.session_state.active_page == "home":
         max_rating = st.sidebar.slider("Maximum Rating", 0.0, 10.0, 10.0, step=0.1, format="%.1f")
 
         # Duration typically doesn't require decimal precision; use integers
-        min_duration = st.sidebar.slider("Minimum Duration (mins)", 0, 300, 90, step=1)
-        max_duration = st.sidebar.slider("Maximum Duration (mins)", 0, 300, 180, step=1)
+        min_duration = st.sidebar.slider("Minimum Duration (mins)", 0, 210, 90, step=1)
+        max_duration = st.sidebar.slider("Maximum Duration (mins)", 0, 210, 180, step=1)
 
         # Votes are whole numbers; ensure no decimals
         min_votes = st.sidebar.number_input("Minimum Votes", min_value=0, value=1000, step=1)
         max_votes = st.sidebar.number_input("Maximum Votes", min_value=0, value=1000000, step=1)
 
-        try:
-            # Fetch distinct genres from the database
-            mycursor.execute("SELECT DISTINCT Genre FROM imdb_movies_list")
-            genre_results = mycursor.fetchall()
+         # ----------- VALIDATION -----------
+        is_valid = (
+            min_rating <= max_rating and
+            min_duration <= max_duration and
+            min_votes <= max_votes
+        )
 
-            # Extract genre names into a list
-            genre_options = ["All"] + sorted(set(row[0] for row in genre_results))
+        if not is_valid:
+            st.markdown(
+                """<p style='color:red; font-weight:bold;'>
+                ℹ️ Please choose the correct filter ranges to see results.
+                </p>""",
+                unsafe_allow_html=True
+            )
+            st.stop() 
+        else:
 
-            # Create a select box for genre selection
-            selected_genre = st.sidebar.selectbox("Genre (optional)",genre_options,key="genre_filter")
+            try:
+                # Fetch distinct genres from the database
+                mycursor.execute("SELECT DISTINCT Genre FROM imdb_movies_list")
+                genre_results = mycursor.fetchall()
 
-            # Prepare the SQL query for filtering
-            query = """
-                SELECT Title, Ratings, Votings, Duration, Genre
-                FROM imdb_movies_list
-                WHERE Ratings BETWEEN %s AND %s
-                AND Duration BETWEEN %s AND %s
-                AND Votings BETWEEN %s AND %s
-            """
-            params = [min_rating, max_rating, min_duration, max_duration, min_votes, max_votes]
+                # Extract genre names into a list
+                genre_options = ["All"] + sorted(set(row[0] for row in genre_results))
 
-            if selected_genre != "All":
-                query += " AND Genre LIKE %s"
-                params.append(f"%{selected_genre}%")
+                # Create a select box for genre selection
+                selected_genre = st.sidebar.selectbox("Genre (optional)",genre_options,key="genre_filter")
 
-            mycursor.execute(query, params)
-            results = mycursor.fetchall()
+                # Prepare the SQL query for filtering
+                query = """
+                    SELECT Title, Ratings, Votings, Duration, Genre
+                    FROM imdb_movies_list
+                    WHERE Ratings BETWEEN %s AND %s
+                    AND Duration BETWEEN %s AND %s
+                    AND Votings BETWEEN %s AND %s
+                """
+                params = [min_rating, max_rating, min_duration, max_duration, min_votes, max_votes]
 
-            # Convert the query results into a DataFrame
-            columns = ['Title', 'Ratings', 'Votings', 'Duration', 'Genre']
-            df = pd.DataFrame(results, columns=columns)
+                if selected_genre != "All":
+                    query += " AND Genre LIKE %s"
+                    params.append(f"%{selected_genre}%")
 
-            if 'Ratings' in df.columns:
-                df['Ratings'] = df['Ratings'].round(1)
+                mycursor.execute(query, params)
+                results = mycursor.fetchall()
 
-            # Display the filtered movies using Streamlit
-            if not df.empty:
+                # Convert the query results into a DataFrame
+                columns = ['Title', 'Ratings', 'Votings', 'Duration', 'Genre']
+                df = pd.DataFrame(results, columns=columns)
 
-                styled_df = df.style.format({
-                    'Ratings': '{:.1f}'  # Ensures Ratings are displayed with 1 decimal place
-                }).applymap(
-                    lambda x: "color: #4f0915; font-weight: bold;" if isinstance(x, (int, str, float)) else ""
-                ).hide(axis="index")
-                
-                st.markdown(
-                    styled_df.to_html(),
-                    unsafe_allow_html=True)
-                    # st.dataframe(df, hide_index=True)  # Display the DataFrame as an interactive table
-            else:
-                st.write("")  # Display a message if no results are found
+                if 'Ratings' in df.columns:
+                    df['Ratings'] = df['Ratings'].round(1)
 
-        except Exception as e:
-            # Handle any exceptions during database operations
-            st.error(f"An error occurred: {e}")
+                # Display the filtered movies using Streamlit
+                if not df.empty:
 
-        # finally:
-        #     # Ensure proper cleanup of database resources
-        #     if 'mycursor' in locals():
-        #         mycursor.close()  # Close the cursor
-        #     if 'mydb' in locals() and mydb.open:
-        #         mydb.close()  # Close the database connection
+                    styled_df = df.style.format({
+                        'Ratings': '{:.1f}'  # Ensures Ratings are displayed with 1 decimal place
+                    }).applymap(
+                        lambda x: "color: #4f0915; font-weight: bold;" if isinstance(x, (int, str, float)) else ""
+                    ).hide(axis="index")
+                    
+                    st.markdown(
+                        styled_df.to_html(),
+                        unsafe_allow_html=True)
+                        # st.dataframe(df, hide_index=True)  # Display the DataFrame as an interactive table
+                else:
+                    st.write("")  # Display a message if no results are found
+
+            except Exception as e:
+                # Handle any exceptions during database operations
+                st.stop()
+
+            # finally:
+            #     # Ensure proper cleanup of database resources
+            #     if 'mycursor' in locals():
+            #         mycursor.close()  # Close the cursor
+            #     if 'mydb' in locals() and mydb.open:
+            #         mydb.close()  # Close the database connection
