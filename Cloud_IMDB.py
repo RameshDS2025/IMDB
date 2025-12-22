@@ -134,8 +134,7 @@ def get_tidb_connection():
         user=st.secrets["tidb"]["user"],
         password=st.secrets["tidb"]["password"],
         database="imdb",
-        ssl_ca=st.secrets["tidb"]["ssl_ca"],
-        ssl_verify_cert=True
+        ssl={"ssl": True}
     )
 
 mydb = get_tidb_connection()
@@ -440,10 +439,10 @@ if st.session_state.active_page == "home":
             genre_results = mycursor.fetchall()
 
             # Extract genre names into a list
-            genre_options = ["All"] + [row[0] for row in genre_results]
+            genre_options = ["All"] + sorted(set(row[0] for row in genre_results))
 
             # Create a select box for genre selection
-            selected_genre = st.sidebar.selectbox("Genre (optional)", genre_options)
+            selected_genre = st.sidebar.selectbox("Genre (optional)",genre_options,key="genre_filter")
 
             # Prepare the SQL query for filtering
             query = """
@@ -455,14 +454,12 @@ if st.session_state.active_page == "home":
             """
             params = [min_rating, max_rating, min_duration, max_duration, min_votes, max_votes]
 
-            # Add genre filter dynamically if provided
             if selected_genre != "All":
-                query += " AND Genre = %s"
-                params.append(selected_genre)
+                query += " AND Genre LIKE %s"
+                params.append(f"%{selected_genre}%")
 
-            # Execute the SQL query with the provided parameters
             mycursor.execute(query, params)
-            results = mycursor.fetchall()  # Fetch all matching records
+            results = mycursor.fetchall()
 
             # Convert the query results into a DataFrame
             columns = ['Title', 'Ratings', 'Votings', 'Duration', 'Genre']
