@@ -524,7 +524,6 @@ if st.session_state.active_page == "home" and "Filter Options":
             WHERE Ratings BETWEEN %s AND %s
             AND Duration BETWEEN %s AND %s
             AND Votings BETWEEN %s AND %s
-            order by ratings desc
         """
         params = [min_rating, max_rating, min_duration, max_duration, min_votes, max_votes]
 
@@ -533,6 +532,8 @@ if st.session_state.active_page == "home" and "Filter Options":
             placeholders = ", ".join(["%s"] * len(selected_genre))
             query += f" AND Genre IN ({placeholders})"
             params.extend(selected_genre)
+        
+        query += " ORDER BY Ratings DESC"
 
 
         # Execute the SQL query with the provided parameters
