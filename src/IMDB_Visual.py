@@ -11,7 +11,7 @@ def get_base64_of_bin_file(bin_file):
     return base64.b64encode(data).decode()
 
 # Provide the path to the uploaded image
-image_base64 = get_base64_of_bin_file("Imdb_Image.png")
+image_base64 = get_base64_of_bin_file("assets/Imdb_Image.png")
 
 
 # CSS to set the background image
@@ -33,7 +33,7 @@ st.markdown(page_bg_img, unsafe_allow_html=True)
 # Apply the custom CSS
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-st.sidebar.image("IMDB_Logo.png", width=150)
+st.sidebar.image("assets/IMDB_Logo.png", width=150)
 
 About_us=st.sidebar.button("About us", type="primary") #Set the about us page
 if About_us:

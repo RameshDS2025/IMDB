@@ -17,7 +17,7 @@
             "database": "imdb",
             "readOnly": false,
             "postConnectionSqlType": "inline",
-            "connectionTimeout": 30,
+            "connectionTimeout": 120,
             "driverOptions": {
                 "retrievePublickey": true,
                 "disableMultiStatements": false
