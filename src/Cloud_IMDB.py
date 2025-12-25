@@ -51,8 +51,8 @@ def run_query(query, params=None):
     try:
         with get_connection() as conn:
             return pd.read_sql(query, conn, params=params)
-    except Exception:
-        st.warning("📡 Database connection interrupted. Please refresh the page.")
+    except Exception as e:
+        st.error(f"Database Error: {e}")
         st.stop()
 
 def rating_formatter(x):
