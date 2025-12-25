@@ -524,6 +524,7 @@ if st.session_state.active_page == "home" and "Filter Options":
             WHERE Ratings BETWEEN %s AND %s
             AND Duration BETWEEN %s AND %s
             AND Votings BETWEEN %s AND %s
+            order by ratings desc
         """
         params = [min_rating, max_rating, min_duration, max_duration, min_votes, max_votes]
 
